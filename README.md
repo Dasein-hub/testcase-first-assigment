@@ -1,64 +1,46 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+### Задание 1 - Обработка курсов валют Национального Банка Республики Казахстан
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Необходимо реализовать сервис со следующим функционалом на языке PHP (не ниже версии 7.4) c использованием фреймворка (Yii2, Laravel - на выбор).  В качестве базы данных должна использоваться MySQL.
 
-## About Laravel
+В базе данных **testcase_db** должна быть таблица _currency_ c колонками:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+ 1. **id** — первичный ключ;
+ 2. **name** — название валюты;
+ 3. **rate** — курс валюты к тенге;
+ 4. **date** — дата получения курса.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+#### Задача 1 - Загрузка данных из первоисточника
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Должна быть консольная команда (с возможностью запуска через cron) для обновления данных в таблице currency. Данные по курсам валют можно взять отсюда: [https://nationalbank.kz/rss/rates_all.xml?switch=russian](https://nationalbank.kz/rss/rates_all.xml?switch=russian)
 
-## Learning Laravel
+#### Задача 2 - Реализация REST API сервисов
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Необходимо реализовать 2 REST API метода:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+ - GET /currencies — должен возвращать список курсов валют с возможностью пагинации на текущую дату (в качестве опционального параметра может быть передана произвольная дата в виде параметра _date_);
+ - GET /currency/  — должен возвращать курс валюты для переданного кода валюты (name) на текущую дату (в качестве опционального параметра может быть передана произвольная дата в виде параметра _date_).
 
-## Laravel Sponsors
+Для возвращаемых результатов должны возвращаться корректные статусы HTTP-ответов:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+ - **200** — данные найдены;
+ - **401** — токен не предоставлен;
+ - **403** — предоставлен некорректный токен;
+ - **404** — данные (на текущую дату) не найдены.
 
-### Premium Partners
+API должно быть защищено bearer авторизацией. Токен авторизации может быть жестко зашит в саму систему. 
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+# Описание логики выполненного задания
 
-## Contributing
+Пользователь может получить список или один из элементов списка курса валют, которые автоматически обновляют в каждую минуту.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# Описание структуры выполненного задания
 
-## Code of Conduct
+Проект состоит из 1-ой миграции, 1-ой модели, 1-ой контроллера и 1-ой пользовательской команды.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+В миграции прописаны поля таблицы currencies, соответствующие заданию.
 
-## Security Vulnerabilities
+В модели прописаны поля из миграции в массив fillables, также создан статический метод для получения списка курса валют с ссылки в нужном формате.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+В контроллере прописаны два метода, работа которых соответствует требованиям задания.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+В пользовательской команде реализовано обновление курсов валют, путём полного удаления старых записей и заполнения таблицы новыми, используя метод класса Currency.
