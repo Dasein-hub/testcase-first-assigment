@@ -16,6 +16,12 @@ class Currency extends Model
         'date'
     ];
 
+    /**
+     * Возвращает список валют, взятый из ссылки в json формате.
+     *
+     *
+     * @return array
+    */
     static public function getData()
     {
         $response = Http::get('https://nationalbank.kz/rss/rates_all.xml?switch=russian');
