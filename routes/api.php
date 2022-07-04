@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(CurrencyController::class)->middleware(['auth:sanctum'])->group(function () {
-    Route::get('currencies', 'index');
-    Route::get('currency', 'show');
+Route::controller(CurrencyController::class)->group(function () {
+    Route::middleware(['auth:sanctum'])->group( function () {
+        Route::get('currencies', 'index');
+        Route::get('currency', 'show');
+    });
+
+    Route::post('token', 'token');
 });
